@@ -1,0 +1,45 @@
+[project]
+name = "usdsensors"
+version = "0.1.0"
+description = "Sensors and sensor rigs as USDA, read into dataclasses and written back: a camera, lidar, IMU or GNSS antenna per file, over its maker's asset; a rig of them, each placed rigidly about one origin."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.12"
+dependencies = ["usd-core>=25.5"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "numpy>=2",
+    "ruff>=0.17.6",
+    "ty>=0.0.107",
+]
+
+[build-system]
+requires = ["uv_build>=0.9,<0.14"]
+build-backend = "uv_build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --no-header --tb=short -p no:cacheprovider --import-mode=importlib"
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = ["*.md"]
+
+[tool.ruff.lint]
+# PLW1514 (a text file opened without saying its encoding) is a preview rule: it alone.
+preview = true
+explicit-preview-rules = true
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "C4", "RUF", "ANN", "PLW1514"]
+# Values read from USD are any type; the converters say so.
+ignore = ["E501", "ANN401"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests say what they check in their names; their helpers need no annotations.
+"tests/*" = ["ANN"]
+
+[tool.ty.analysis]
+# USD is C++ bindings without usable type information.
+replace-imports-with-any = ["pxr.**"]

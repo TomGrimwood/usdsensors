@@ -1,0 +1,2 @@
+# Text files with LF line ends, on every machine (Windows' checkouts too).
+* text=auto eol=lf

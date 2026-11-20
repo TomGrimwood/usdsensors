@@ -1,0 +1,25 @@
+# The checks on Linux and Windows at every push: lint, format, types, the tests (no GPU here:
+# tests that render are elsewhere and are not run).
+name: checks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  checks:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - run: uv run ruff check
+      - run: uv run ruff format --check
+      - run: uv run ty check
+      - run: uv run pytest

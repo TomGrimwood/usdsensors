@@ -1,0 +1,77 @@
+#usda 1.0
+(
+    "The schemas usdsensors adds to USD: what marks a prim as a sensor to record, and only what NVIDIA's own schemas (OmniSensorAPI, OmniLens, OmniLidar) do not say. A sensor is off when its prim is inactive (USD's own). generatedSchema.usda and plugInfo.json are made from this file by tools/generate.sh."
+    subLayers = [
+        @usd/schema.usda@
+    ]
+)
+
+over "GLOBAL" (
+    customData = {
+        string libraryName = "usdSensors"
+        string libraryPath = "."
+        bool skipCodeGeneration = true
+    }
+)
+{
+}
+
+class "SensorCameraAPI" (
+    inherits = </APISchemaBase>
+    doc = """A camera to record: a Camera prim. Its lens is its own attributes and
+    OmniLens's (OmniLensDistortion*API: the image size, intrinsics and distortion), its
+    frame rate OmniSensorAPI's omni:sensor:tickRate."""
+    customData = {
+        token apiSchemaType = "singleApply"
+    }
+)
+{
+    double sensor:camera:readoutSeconds = 0 (
+        doc = """How long a rolling shutter takes to read the image's rows, top to bottom, in
+        seconds: 0 for a global shutter. Its rows' times are the texture at
+        shutterTimeTexturePath."""
+        displayName = "Readout (s)"
+    )
+}
+
+class "SensorLidarAPI" (
+    inherits = </APISchemaBase>
+    doc = """A lidar to record: an OmniLidar prim. Its pattern, range and returns are its own
+    omni:sensor:Core attributes, its scan rate OmniSensorAPI's omni:sensor:tickRate, which
+    has to equal its omni:sensor:Core:scanRateBaseHz: a scan a tick."""
+    customData = {
+        token apiSchemaType = "singleApply"
+    }
+)
+{
+}
+
+class "SensorImuAPI" (
+    inherits = </APISchemaBase>
+    doc = """An inertial measurement unit. The prim's axes are the IMU's: it reports
+    specific force and angular rate along them."""
+    customData = {
+        token apiSchemaType = "singleApply"
+    }
+)
+{
+    double sensor:imu:rateHz = 200 (
+        doc = "Samples a second."
+        displayName = "Rate (Hz)"
+    )
+}
+
+class "SensorGnssAPI" (
+    inherits = </APISchemaBase>
+    doc = """A GNSS receiver's antenna. The prim's origin is the antenna's phase centre: the
+    point whose position the receiver reports."""
+    customData = {
+        token apiSchemaType = "singleApply"
+    }
+)
+{
+    double sensor:gnss:rateHz = 10 (
+        doc = "Position fixes a second."
+        displayName = "Rate (Hz)"
+    )
+}
